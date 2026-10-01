@@ -572,7 +572,11 @@ export default function TunicCalculator() {
           font-family: var(--font-display); font-weight: 600; font-size: 40px;
           color: var(--ink); margin: 0 0 6px;
         }
-        .tunic-sub { color: var(--slate); font-size: 15px; max-width: 560px; line-height: 1.5; }
+        .tunic-sub { color: var(--slate); font-size: 15px; line-height: 1.5; }
+        .tunic-sub-heading {
+          font-family: var(--font-display); font-weight: 600; font-size: 20px;
+          color: var(--ink); margin: 18px 0 6px;
+        }
 
         .piece-selector {
           max-width: 1100px; margin: 0 auto 28px; display: flex; align-items: center; gap: 12px;
@@ -702,12 +706,14 @@ export default function TunicCalculator() {
       <div className="tunic-header">
         <h1 className="tunic-title">Tenue médiévale : Normand XIe siècle</h1>
         <p className="tunic-sub">
-          Ce site aide à la fabrication du costume typique de Normand du XIe
-          siècle utilisé par la Compagnie Excalibur.
-          <br /><br />
-          Choisissez la pièce à construire, entrez vos mesures corporelles, et
-          l'outil vous indiquera le calcul des mesures du patron et comment
-          tracer les éléments sur votre papier quadrillé.
+          Cet outil sert d'aide à la fabrication du costume médiéval du XIe
+          siècle tel qu'utilisé par la Compagnie Excalibur.
+        </p>
+        <h2 className="tunic-sub-heading">Comment utiliser ce site&nbsp;?</h2>
+        <p className="tunic-sub">
+          Choisissez la pièce à construire, entrez vos mesures, et l'outil
+          vous indiquera le calcul des mesures du patron ainsi que comment
+          mesurer et tracer les pièces du costume sur votre papier quadrillé.
         </p>
       </div>
 
