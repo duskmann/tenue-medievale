@@ -733,9 +733,16 @@ export default function TunicCalculator() {
       <div className="tunic-grid">
         <div>
           <StepHeader step="1" title="Prise de mesures">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vous pouvez
-            remplacer ce texte par vos propres instructions sur la façon de
-            prendre chaque mesure (avec quel outil, sur quels vêtements, etc.).
+            Pour prendre vos mensurations avec précision, munissez-vous d'un mètre ruban de couture, 
+            et, idéalement, faites-vous aider par une autre personne : certaines mesures sont difficiles
+            à relever seul sans fausser la posture.
+
+            Mesurez-vous en sous-vêtements ou en vêtements fins (Ex: T-shirt et pantalon). Tenez-vous debout,
+             droit mais détendu, les pieds légèrement écartés et les bras le long du corps. Respirez normalement
+            sans rentrer le ventre ni bomber le torse. Le ruban doit épouser le corps sans le comprimer: il doit rester
+            bien à plat et parallèle au sol pour les tours (hanche, taille). 
+
+            Arrondissez les valeurs au centimètre supérieur (Ex: 65,4 cm --> 66 cm)
           </StepHeader>
           <div className="ledger">
           <div className="ledger-title">Mesures corporelles &mdash; {piece.label}</div>
@@ -772,10 +779,8 @@ export default function TunicCalculator() {
 
         <div className="draft-board">
           <StepHeader step="2" title="Calcul des mesures du patron">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Vous
-            pouvez remplacer ce texte par une explication de votre méthode de
-            calcul.
+            Cette section détaille le calcul des mesures du patron selon les mensurations que vous venez d'entrer.
+            Notez que les valeurs calculées tiennent compte des marges d'aisance et de couture.
           </StepHeader>
           {hasFormulas ? (
             <FormulaSection sections={explanations} />
