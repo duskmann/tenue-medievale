@@ -593,8 +593,7 @@ export default function TunicCalculator() {
         }
         .piece-selector select:focus { border-color: #d4ab6c; }
 
-        .tunic-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 340px 1fr; gap: 28px; }
-        @media (max-width: 800px) { .tunic-grid { grid-template-columns: 1fr; } }
+        .tunic-steps { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 44px; }
 
         .ledger {
           background: var(--ink); color: var(--parchment); border-radius: 4px; padding: 24px;
@@ -608,6 +607,7 @@ export default function TunicCalculator() {
           color: #8b9791; margin: 20px 0 10px;
         }
         .ledger-subtitle:first-of-type { margin-top: 0; }
+        .field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
         .field { margin-bottom: 16px; }
         .field label { display: block; font-size: 12px; letter-spacing: 0.03em; color: var(--parchment); margin-bottom: 4px; }
         .field label .req { color: var(--brass); margin-left: 3px; }
@@ -623,7 +623,7 @@ export default function TunicCalculator() {
 
         .status { margin-top: 6px; font-size: 12px; color: #8b9791; font-family: var(--font-mono); }
 
-        .draft-board { display: flex; flex-direction: column; gap: 20px; }
+        .step-section { display: flex; flex-direction: column; gap: 20px; }
         .placeholder {
           border: 1px dashed var(--slate); border-radius: 4px; padding: 60px 24px;
           text-align: center; color: var(--slate); font-size: 14px;
@@ -730,17 +730,17 @@ export default function TunicCalculator() {
         </select>
       </div>
 
-      <div className="tunic-grid">
-        <div>
+      <div className="tunic-steps">
+        <section className="step-section">
           <StepHeader step="1" title="Prise de mesures">
-            Pour prendre vos mensurations avec précision, munissez-vous d'un mètre ruban de couture, 
+            Pour prendre vos mensurations avec précision, munissez-vous d'un mètre ruban de couture,
             et, idéalement, faites-vous aider par une autre personne : certaines mesures sont difficiles
             à relever seul sans fausser la posture.
 
             Mesurez-vous en sous-vêtements ou en vêtements fins (Ex: T-shirt et pantalon). Tenez-vous debout,
              droit mais détendu, les pieds légèrement écartés et les bras le long du corps. Respirez normalement
             sans rentrer le ventre ni bomber le torse. Le ruban doit épouser le corps sans le comprimer: il doit rester
-            bien à plat et parallèle au sol pour les tours (hanche, taille). 
+            bien à plat et parallèle au sol pour les tours (hanche, taille).
 
             Arrondissez les valeurs au centimètre supérieur (Ex: 65,4 cm --> 66 cm)
           </StepHeader>
@@ -749,24 +749,26 @@ export default function TunicCalculator() {
           {fieldGroups.map((group) => (
             <React.Fragment key={group.title}>
               <div className="ledger-subtitle">{group.title}</div>
-              {group.fields.map((f) => (
-                <div className="field" key={f.key}>
-                  <label htmlFor={f.key}>{f.label}</label>
-                  <span className="hint">{f.hint}</span>
-                  <div className="input-row">
-                    <input
-                      id={f.key}
-                      type="number"
-                      min="0"
-                      inputMode="decimal"
-                      value={measurements[f.key]}
-                      onChange={(e) => setField(f.key, e.target.value)}
-                      placeholder="0"
-                    />
-                    <span className="unit">cm</span>
+              <div className="field-grid">
+                {group.fields.map((f) => (
+                  <div className="field" key={f.key}>
+                    <label htmlFor={f.key}>{f.label}</label>
+                    <span className="hint">{f.hint}</span>
+                    <div className="input-row">
+                      <input
+                        id={f.key}
+                        type="number"
+                        min="0"
+                        inputMode="decimal"
+                        value={measurements[f.key]}
+                        onChange={(e) => setField(f.key, e.target.value)}
+                        placeholder="0"
+                      />
+                      <span className="unit">cm</span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </React.Fragment>
           ))}
           <div className="status">
@@ -775,9 +777,9 @@ export default function TunicCalculator() {
               : `${missingRequired.length} mesure(s) manquante(s).`}
           </div>
           </div>
-        </div>
+        </section>
 
-        <div className="draft-board">
+        <section className="step-section">
           <StepHeader step="2" title="Calcul des mesures du patron">
             Cette section détaille le calcul des mesures du patron selon les mensurations que vous venez d'entrer.
             Notez que les valeurs calculées tiennent compte des marges d'aisance et de couture.
@@ -789,7 +791,9 @@ export default function TunicCalculator() {
               Les formules de calcul pour « {piece.label} » n'ont pas encore été définies.
             </div>
           )}
+        </section>
 
+        <section className="step-section">
           <StepHeader step="3" title="Construction du patron">
             Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
             nisi ut aliquip ex ea commodo consequat. Vous pouvez remplacer ce
@@ -798,7 +802,7 @@ export default function TunicCalculator() {
 
           {!hasFormulas && (
             <div className="placeholder">
-              Le patron et les instructions d'assemblage pour « {piece.label} » n'ont pas encore été définis.
+              Le patron pour « {piece.label} » n'a pas encore été défini.
             </div>
           )}
           {hasFormulas && !pattern && (
@@ -818,23 +822,39 @@ export default function TunicCalculator() {
               </div>
 
               <TriangleConstructionNote dims={pattern.triangle} />
-
-              <div className="steps">
-                <h2 className="steps-title">Assemblage</h2>
-                <p className="steps-caption">Suivez l'ordre — chaque couture s'appuie sur la précédente.</p>
-                {STEPS.map((s, i) => (
-                  <div className="step" key={s.title}>
-                    <div className="step-num">{String(i + 1).padStart(2, "0")}</div>
-                    <div>
-                      <p className="step-title">{s.title}</p>
-                      <p className="step-body">{s.body}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
             </>
           )}
-        </div>
+        </section>
+
+        <section className="step-section">
+          <StepHeader step="4" title="Assemblage">
+            Suivez l'ordre — chaque couture s'appuie sur la précédente.
+          </StepHeader>
+
+          {!hasFormulas && (
+            <div className="placeholder">
+              Les instructions d'assemblage pour « {piece.label} » n'ont pas encore été définies.
+            </div>
+          )}
+          {hasFormulas && !pattern && (
+            <div className="placeholder">
+              Renseignez toutes les mesures ci-dessus pour afficher les instructions d'assemblage.
+            </div>
+          )}
+          {pattern && (
+            <div className="steps">
+              {STEPS.map((s, i) => (
+                <div className="step" key={s.title}>
+                  <div className="step-num">{String(i + 1).padStart(2, "0")}</div>
+                  <div>
+                    <p className="step-title">{s.title}</p>
+                    <p className="step-body">{s.body}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
       </div>
     </div>
   );
