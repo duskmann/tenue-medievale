@@ -508,16 +508,6 @@ function buildFieldGroups(requiredKeys) {
   })).filter((g) => g.fields.length > 0);
 }
 
-const STEPS = [
-  { title: "Couper les pièces", body: "Sur le tissu plié, coupez 2 pans de buste, 2 manches, 1 col et 2 triangles d'aisance, en suivant les dimensions calculées ci-dessus. Les marges de couture sont déjà incluses." },
-  { title: "Coudre les coutures d'épaule", body: "Posez les deux pans de buste endroit contre endroit et cousez le long des épaules." },
-  { title: "Poser les manches", body: "Faites correspondre le bord large de chaque manche (largeur épaule) à l'emmanchure, endroit contre endroit, et cousez." },
-  { title: "Coudre les coutures latérales", body: "Cousez le côté du buste et le dessous de chaque manche en une seule couture continue, en vous arrêtant au point où commence la fente du genou." },
-  { title: "Insérer les triangles d'aisance", body: "Ouvrez la fente latérale au niveau du genou et insérez-y un triangle d'aisance de chaque côté, pointe vers le haut, pour permettre l'amplitude de mouvement à la marche." },
-  { title: "Poser le col", body: "Fixez le col autour de l'encolure. Marquez et découpez la fente avant selon la profondeur calculée, puis finissez le bord avec le col." },
-  { title: "Ourler les bords", body: "Ourlez le bas du buste, les poignets des manches et les bords des fentes de genou." },
-];
-
 export default function TunicCalculator() {
   const [selectedPiece, setSelectedPiece] = useState("tunique");
   const piece = PIECES.find((p) => p.key === selectedPiece);
@@ -665,7 +655,7 @@ export default function TunicCalculator() {
           font-family: var(--font-display); font-weight: 600; font-size: 26px;
           color: var(--ink); margin: 0 0 8px;
         }
-        .step-header-desc { color: var(--slate); font-size: 13.5px; line-height: 1.55; max-width: 640px; font-style: italic; }
+        .step-header-desc { color: var(--slate); font-size: 13.5px; line-height: 1.55; font-style: italic; }
 
         .formulas { margin-bottom: 6px; }
         .formula-card {
@@ -834,9 +824,13 @@ export default function TunicCalculator() {
 
         <section className="step-section">
           <StepHeader step="3" title="Construction du patron">
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-            nisi ut aliquip ex ea commodo consequat. Vous pouvez remplacer ce
-            texte par vos instructions de découpe et d'assemblage.
+            Une fois les mesures définies, tracez sur un papier quadrillé puis
+            coupez les pièces de votre patron selon les instructions
+            ci-dessous. Il est conseillé de ne pas faire vos mesures
+            directement sur le tissu: c'est moins précis, et en cas d'erreur,
+            c'est plus difficile à rattraper. Placez les pièces de papier
+            quadrillé préalablement découpées sur votre tissu, en les tenant
+            à l'aide d'épingles si nécéssaires, et coupez vos pièces de tissu.
           </StepHeader>
 
           {!hasFormulas && (
@@ -851,8 +845,6 @@ export default function TunicCalculator() {
           )}
           {pattern && (
             <>
-              <h2 className="steps-title">Pièces du patron</h2>
-              <p className="steps-caption">Tracées à l'échelle à partir des calculs ci-dessus.</p>
               <div className="pattern-row">
                 <BusteSVG dims={pattern.buste} />
                 <MancheSVG dims={pattern.manche} />
@@ -867,32 +859,11 @@ export default function TunicCalculator() {
 
         <section className="step-section">
           <StepHeader step="4" title="Assemblage">
-            Suivez l'ordre — chaque couture s'appuie sur la précédente.
+            Une fois que vous avez vos pièces en tissu, assemblez-les selon
+            les instructions ci-dessous.
           </StepHeader>
 
-          {!hasFormulas && (
-            <div className="placeholder">
-              Les instructions d'assemblage pour « {piece.label} » n'ont pas encore été définies.
-            </div>
-          )}
-          {hasFormulas && !pattern && (
-            <div className="placeholder">
-              Renseignez toutes les mesures ci-dessus pour afficher les instructions d'assemblage.
-            </div>
-          )}
-          {pattern && (
-            <div className="steps">
-              {STEPS.map((s, i) => (
-                <div className="step" key={s.title}>
-                  <div className="step-num">{String(i + 1).padStart(2, "0")}</div>
-                  <div>
-                    <p className="step-title">{s.title}</p>
-                    <p className="step-body">{s.body}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          <div className="placeholder">WIP — se référer aux profs de couture</div>
         </section>
       </div>
     </div>
