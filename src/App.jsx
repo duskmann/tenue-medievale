@@ -701,23 +701,56 @@ export default function TunicCalculator() {
         }
         .step-title { font-weight: 600; font-size: 14px; margin: 0 0 4px; color: var(--ink); }
         .step-body { font-size: 13.5px; color: #3d4640; line-height: 1.5; margin: 0; }
+
+        .print-bar { max-width: 1100px; margin: 0 auto 28px; display: flex; justify-content: center; }
+        .print-button {
+          background: var(--ink); border: 1px solid var(--brass); color: var(--parchment);
+          font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+          padding: 10px 20px; border-radius: 4px; cursor: pointer;
+        }
+        .print-button:hover { border-color: #d4ab6c; }
+
+        @media print {
+          @page { margin: 1.5cm; }
+          .no-print { display: none !important; }
+          .tunic-app { background: #fff; padding: 0; }
+          .ledger, .formula-card, .pattern-card {
+            background: #fff; border: 1px solid #999; color: #000;
+          }
+          .ledger-title, .formula-card-title, .pattern-card-title,
+          .formula-expr, .term-expr, .formula-sub-result, .step-num {
+            color: #000;
+          }
+          .ledger-subtitle, .formula-card-cut, .pattern-card-cut,
+          .field .hint, .field .unit, .status, .term-note, .formula-sub {
+            color: #444;
+          }
+          .field input {
+            background: #fff; border: 1px solid #999; color: #000;
+          }
+          .step-section, .pattern-card, .formula-card, .construction-note {
+            break-inside: avoid;
+          }
+        }
       `}</style>
 
       <div className="tunic-header">
-        <h1 className="tunic-title">Tenue médiévale : Normand XIe siècle</h1>
+        <h1 className="tunic-title">Tenue médiévale : Normand XIe siècle &mdash; {piece.label}</h1>
         <p className="tunic-sub">
           Cet outil sert d'aide à la fabrication du costume médiéval du XIe
           siècle tel qu'utilisé par la Compagnie Excalibur.
         </p>
-        <h2 className="tunic-sub-heading">Comment utiliser ce site&nbsp;?</h2>
-        <p className="tunic-sub">
-          Choisissez la pièce à construire, entrez vos mesures, et l'outil
-          vous indiquera le calcul des mesures du patron ainsi que comment
-          mesurer et tracer les pièces du costume sur votre papier quadrillé.
-        </p>
+        <div className="no-print">
+          <h2 className="tunic-sub-heading">Comment utiliser ce site&nbsp;?</h2>
+          <p className="tunic-sub">
+            Choisissez la pièce à construire, entrez vos mesures, et l'outil
+            vous indiquera le calcul des mesures du patron ainsi que comment
+            mesurer et tracer les pièces du costume sur votre papier quadrillé.
+          </p>
+        </div>
       </div>
 
-      <div className="piece-selector">
+      <div className="piece-selector no-print">
         <label htmlFor="piece-select">Pièce à construire&nbsp;:</label>
         <select
           id="piece-select"
@@ -728,6 +761,12 @@ export default function TunicCalculator() {
             <option key={p.key} value={p.key}>{p.label}</option>
           ))}
         </select>
+      </div>
+
+      <div className="print-bar no-print">
+        <button type="button" className="print-button" onClick={() => window.print()}>
+          Imprimer / Exporter en PDF
+        </button>
       </div>
 
       <div className="tunic-steps">
