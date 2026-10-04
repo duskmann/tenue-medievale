@@ -289,22 +289,27 @@ function MancheSVG({ dims }) {
   );
 }
 
-function ColSVG({ dims }) {
+function EncolureSVG({ dims }) {
   const valid = isValidDims(dims);
-  const pad = 40;
+  const margin = 30;
   const scale = 5;
   const r = (dims.rayon || 0) * scale;
   const slit = (dims.profondeurFente || 0) * scale;
-  const viewW = r * 2 + pad * 2 + 20;
-  const viewH = r + slit + pad * 2;
-  const cx = pad + r;
-  const cy = pad + r;
+  const swatchW = r * 2 + margin * 2;
+  const swatchH = r * 2 + slit + margin * 2;
+  const pad = 40;
+  const viewW = swatchW + pad * 2 + 20;
+  const viewH = swatchH + pad * 2;
+  const x0 = pad, y0 = pad;
+  const cx = x0 + margin + r;
+  const cy = y0 + margin + r;
   return (
-    <PatternCard title="Col" cutNote="couper 1" viewW={viewW} viewH={viewH} invalid={!valid}>
+    <PatternCard title="Trou d'encolure" cutNote="découpé dans le buste" viewW={viewW} viewH={viewH} invalid={!valid}>
       {(markerId) => (
         <>
-          <circle cx={cx} cy={cy} r={r} fill="var(--parchment)" stroke="var(--ink)" strokeWidth="1.5" />
-          <line x1={cx} y1={cy + r} x2={cx} y2={cy + r + slit} stroke="var(--ink)" strokeWidth="2.5" />
+          <rect x={x0} y={y0} width={swatchW} height={swatchH} fill="var(--parchment)" stroke="var(--ink)" strokeWidth="1.5" />
+          <circle cx={cx} cy={cy} r={r} fill="#000" />
+          <line x1={cx} y1={cy + r} x2={cx} y2={cy + r + slit} stroke="#000" strokeWidth="3" />
           <DimLine x1={cx} y1={cy} x2={cx + r} y2={cy} label={`${dims.rayon.toFixed(1)} cm`} markerId={markerId} />
           <DimLine x1={cx + r + 16} y1={cy + r} x2={cx + r + 16} y2={cy + r + slit} label={`${dims.profondeurFente.toFixed(1)} cm`} markerId={markerId} vertical />
         </>
@@ -614,6 +619,10 @@ export default function TunicCalculator() {
         .status { margin-top: 6px; font-size: 12px; color: #8b9791; font-family: var(--font-mono); }
 
         .step-section { display: flex; flex-direction: column; gap: 20px; }
+        .subsection {
+          border-top: 1px solid #d8cdb4; padding-top: 20px;
+          display: flex; flex-direction: column; gap: 16px;
+        }
         .placeholder {
           border: 1px dashed var(--slate); border-radius: 4px; padding: 60px 24px;
           text-align: center; color: var(--slate); font-size: 14px;
@@ -848,11 +857,24 @@ export default function TunicCalculator() {
               <div className="pattern-row">
                 <BusteSVG dims={pattern.buste} />
                 <MancheSVG dims={pattern.manche} />
-                <ColSVG dims={pattern.col} />
                 <TriangleSVG dims={pattern.triangle} />
               </div>
 
               <TriangleConstructionNote dims={pattern.triangle} />
+
+              <div className="subsection">
+                <h2 className="steps-title">Découpe de l'encolure</h2>
+                <p className="steps-caption">
+                  Le trou ci-dessous (en noir) est à découper directement
+                  dans le buste : il correspond au tour de cou. Le col
+                  lui-même est une pièce distincte, à découper dans un tissu
+                  contrastant, qui vient border ce trou.
+                </p>
+                <div className="pattern-row">
+                  <EncolureSVG dims={pattern.col} />
+                </div>
+                <div className="placeholder">WIP — à compléter</div>
+              </div>
             </>
           )}
         </section>
