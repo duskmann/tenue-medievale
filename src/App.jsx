@@ -525,7 +525,15 @@ function TriangleSVG({ dims }) {
           <polygon points={points} fill="var(--parchment)" stroke="var(--ink)" strokeWidth="1.5" />
           <SymmetryAxis x={apex.x} y1={apex.y} y2={bl.y} />
           <line x1={apex.x} y1={bl.y} x2={br.x} y2={bl.y} stroke="var(--slate)" strokeWidth="1" strokeDasharray="3,3" />
-          <text x={apex.x + 5} y={(apex.y + bl.y) / 2} fill="var(--slate)" fontFamily="var(--font-mono)" fontSize="9">
+          <text
+            x={apex.x - 6}
+            y={(apex.y + bl.y) / 2}
+            transform={`rotate(-90 ${apex.x - 6} ${(apex.y + bl.y) / 2})`}
+            textAnchor="middle"
+            fill="var(--slate)"
+            fontFamily="var(--font-mono)"
+            fontSize="9"
+          >
             {perpHeight.toFixed(1)} cm
           </text>
           <text x={(apex.x + br.x) / 2 - 8} y={bl.y - 5} fill="var(--slate)" fontFamily="var(--font-mono)" fontSize="9">
