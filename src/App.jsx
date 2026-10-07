@@ -260,7 +260,7 @@ function buildBraiesExplanations(m) {
       cutNote: "couper 2",
       formulas: [
         {
-          name: "Base du triangle",
+          name: "Base du triangle (C → C1)",
           parts: [
             { expr: "Largeur fente intérieur mi-cuisse", note: null },
             { expr: "(2+2)", note: "marge de couture de chaque côté" },
@@ -270,16 +270,16 @@ function buildBraiesExplanations(m) {
           result: num("largeurFenteIntMiCuisse") + 4,
         },
         {
-          name: "Hauteur du triangle",
+          name: "Hauteur du triangle (B → C)",
           parts: [
-            { expr: "Hauteur taille-mi-cuisse − Hauteur taille-hanche", note: "le sommet du triangle est au niveau de la hanche" },
+            { expr: "Hauteur taille-mi-cuisse − Hauteur taille-hanche", note: "le triangle part du bas du rectangle, au niveau de la hanche" },
           ],
           substituted: `${fmtVal(m.tailleMiCuisse)} − ${fmtVal(m.tailleHanche)}`,
           ready: has("tailleMiCuisse", "tailleHanche"),
           result: num("tailleMiCuisse") - num("tailleHanche"),
         },
         {
-          name: "Hauteur du rectangle (au sommet)",
+          name: "Hauteur du rectangle (A → B)",
           parts: [
             { expr: "Hauteur taille-hanche", note: null },
             { expr: "4", note: "ourlet haut" },
@@ -289,7 +289,7 @@ function buildBraiesExplanations(m) {
           result: num("tailleHanche") + 4,
         },
         {
-          name: "Largeur du rectangle",
+          name: "Largeur du rectangle (A → A1)",
           parts: [
             { expr: "5", note: null },
             { expr: "(2+2)", note: "marge de couture" },
@@ -580,9 +580,13 @@ function EntrejambeSVG({ dims }) {
   const viewH = hb + ht + pad * 2;
   const cx = pad + w / 2;
   const y0 = pad;
-  const apex = { x: cx, y: y0 + hb };
-  const bl = { x: cx - base / 2, y: y0 + hb + ht };
-  const br = { x: cx + base / 2, y: y0 + hb + ht };
+  const A = { x: cx - band / 2, y: y0 };
+  const A1 = { x: cx + band / 2, y: y0 };
+  const B = { x: cx - band / 2, y: y0 + hb };
+  const B1 = { x: cx + band / 2, y: y0 + hb };
+  const C = { x: cx - base / 2, y: y0 + hb + ht };
+  const C1 = { x: cx + base / 2, y: y0 + hb + ht };
+  const outline = [A, A1, B1, C1, C, B].map((p) => `${p.x},${p.y}`).join(" ");
   return (
     <PatternCard
       title="Pièce d'entrejambe"
@@ -598,13 +602,19 @@ function EntrejambeSVG({ dims }) {
     >
       {(markerId) => (
         <>
-          <polygon points={`${apex.x},${apex.y} ${bl.x},${bl.y} ${br.x},${br.y}`} fill="var(--parchment)" stroke="var(--ink)" strokeWidth="1.5" />
-          <rect x={cx - band / 2} y={y0} width={band} height={hb} fill="var(--parchment)" stroke="var(--ink)" strokeWidth="1.5" />
-          <line x1={apex.x} y1={apex.y} x2={apex.x} y2={bl.y} stroke="var(--slate)" strokeWidth="1" strokeDasharray="3,3" />
-          <DimLine x1={cx - band / 2} y1={y0 - 14} x2={cx + band / 2} y2={y0 - 14} label={`${dims.largeurBande.toFixed(1)} cm`} markerId={markerId} />
-          <DimLine x1={bl.x} y1={bl.y + 26} x2={br.x} y2={br.y + 26} label={`Base ${dims.base.toFixed(1)} cm`} markerId={markerId} />
-          <DimLine x1={cx - band / 2 - 14} y1={y0} x2={cx - band / 2 - 14} y2={apex.y} label={`${dims.hauteurBande.toFixed(1)} cm`} markerId={markerId} vertical />
-          <DimLine x1={pad + w + 22} y1={apex.y} x2={pad + w + 22} y2={bl.y} label={`${dims.hauteurTriangle.toFixed(1)} cm`} markerId={markerId} vertical />
+          <polygon points={outline} fill="var(--parchment)" stroke="var(--ink)" strokeWidth="1.5" />
+          <line x1={cx} y1={y0} x2={cx} y2={C.y} stroke="var(--slate)" strokeWidth="1" strokeDasharray="3,3" />
+          <line x1={B.x} y1={B.y} x2={B1.x} y2={B1.y} stroke="var(--slate)" strokeWidth="1" strokeDasharray="3,3" />
+          <PointLabel x={A.x - 6} y={A.y + 14} anchor="end">A</PointLabel>
+          <PointLabel x={A1.x + 6} y={A1.y + 14} anchor="start">A1</PointLabel>
+          <PointLabel x={B.x - 6} y={B.y + 4} anchor="end">B</PointLabel>
+          <PointLabel x={B1.x + 6} y={B1.y + 4} anchor="start">B1</PointLabel>
+          <PointLabel x={C.x + 10} y={C.y - 6} anchor="start">C</PointLabel>
+          <PointLabel x={C1.x - 10} y={C1.y - 6} anchor="end">C1</PointLabel>
+          <DimLine x1={A.x} y1={y0 - 14} x2={A1.x} y2={y0 - 14} label={`${dims.largeurBande.toFixed(1)} cm`} markerId={markerId} />
+          <DimLine x1={C.x} y1={C.y + 26} x2={C1.x} y2={C1.y + 26} label={`Base ${dims.base.toFixed(1)} cm`} markerId={markerId} />
+          <DimLine x1={A.x - 30} y1={y0} x2={A.x - 30} y2={B.y} label={`${dims.hauteurBande.toFixed(1)} cm`} markerId={markerId} vertical />
+          <DimLine x1={pad + w + 22} y1={B.y} x2={pad + w + 22} y2={C.y} label={`${dims.hauteurTriangle.toFixed(1)} cm`} markerId={markerId} vertical />
         </>
       )}
     </PatternCard>
