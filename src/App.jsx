@@ -1084,6 +1084,14 @@ export default function TunicCalculator() {
         .step-title { font-weight: 600; font-size: 14px; margin: 0 0 4px; color: var(--ink); }
         .step-body { font-size: 13.5px; color: #3d4640; line-height: 1.5; margin: 0; }
 
+        .site-footer {
+          max-width: 1100px; margin: 56px auto 0; padding-top: 14px;
+          border-top: 1px solid #d8cdb4; text-align: center;
+          font-size: 12px; color: var(--slate);
+        }
+        .site-footer a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+        .site-footer a:hover { color: var(--ink); }
+
         .print-bar { max-width: 1100px; margin: 0 auto 28px; display: flex; justify-content: center; }
         .print-button {
           background: var(--ink); border: 1px solid var(--brass); color: var(--parchment);
@@ -1247,6 +1255,10 @@ export default function TunicCalculator() {
           <div className="placeholder">WIP — se référer aux profs de couture</div>
         </section>
       </div>
+
+      <footer className="site-footer">
+        Shyam S &middot; <a href="mailto:shyam@sridar.net">shyam@sridar.net</a>
+      </footer>
     </div>
   );
 }
