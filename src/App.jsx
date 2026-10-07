@@ -378,11 +378,25 @@ function BusteSVG({ dims }) {
   const viewW = w + pad * 2 + 20;
   const viewH = h + pad * 2;
   const x0 = pad, y0 = pad;
+  const cx = x0 + w / 2;
+  const A = { x: cx, y: y0 };
+  const A1 = { x: x0, y: y0 };
+  const A2 = { x: x0 + w, y: y0 };
+  const B = { x: cx, y: y0 + h };
+  const B1 = { x: x0, y: y0 + h };
+  const B2 = { x: x0 + w, y: y0 + h };
   return (
     <PatternCard title="Buste avant et arrière" cutNote="couper 2" viewW={viewW} viewH={viewH} invalid={!valid}>
       {(markerId) => (
         <>
           <rect x={x0} y={y0} width={w} height={h} fill="var(--parchment)" stroke="var(--ink)" strokeWidth="1.5" />
+          <SymmetryAxis x={cx} y1={A.y} y2={B.y} />
+          <PointMark {...A} label="A" dx={6} dy={15} />
+          <PointMark {...A1} label="A1" dx={7} dy={15} />
+          <PointMark {...A2} label="A2" dx={-7} dy={15} anchor="end" />
+          <PointMark {...B} label="B" dx={6} dy={-6} />
+          <PointMark {...B1} label="B1" dx={7} dy={-6} />
+          <PointMark {...B2} label="B2" dx={-7} dy={-6} anchor="end" />
           <DimLine x1={x0} y1={y0 - 14} x2={x0 + w} y2={y0 - 14} label={`${dims.largeur.toFixed(1)} cm`} markerId={markerId} />
           <DimLine x1={x0 - 14} y1={y0} x2={x0 - 14} y2={y0 + h} label={`${dims.longueur.toFixed(1)} cm`} markerId={markerId} vertical />
         </>
@@ -404,14 +418,28 @@ function MancheSVG({ dims }) {
   const x0 = pad + (maxW - top) / 2;
   const x1 = pad + (maxW - bottom) / 2;
   const y0 = pad, y1 = pad + len;
-  const points = `${x0},${y0} ${x0 + top},${y0} ${x1 + bottom},${y1} ${x1},${y1}`;
+  const cx = pad + maxW / 2;
+  const A = { x: cx, y: y0 };
+  const A1 = { x: x0, y: y0 };
+  const A2 = { x: x0 + top, y: y0 };
+  const B = { x: cx, y: y1 };
+  const B1 = { x: x1, y: y1 };
+  const B2 = { x: x1 + bottom, y: y1 };
+  const points = [A1, A2, B2, B1].map((q) => `${q.x},${q.y}`).join(" ");
   return (
     <PatternCard title="Manche" cutNote="couper 2" viewW={viewW} viewH={viewH} invalid={!valid}>
       {(markerId) => (
         <>
           <polygon points={points} fill="var(--parchment)" stroke="var(--ink)" strokeWidth="1.5" />
+          <SymmetryAxis x={cx} y1={A.y} y2={B.y} />
+          <PointMark {...A} label="A" dx={6} dy={15} />
+          <PointMark {...A1} label="A1" dx={7} dy={15} />
+          <PointMark {...A2} label="A2" dx={-7} dy={15} anchor="end" />
+          <PointMark {...B} label="B" dx={6} dy={-6} />
+          <PointMark {...B1} label="B1" dx={7} dy={-6} />
+          <PointMark {...B2} label="B2" dx={-7} dy={-6} anchor="end" />
           <DimLine x1={x0} y1={y0 - 14} x2={x0 + top} y2={y0 - 14} label={`${dims.largeurEpaule.toFixed(1)} cm`} markerId={markerId} />
-          <DimLine x1={x1} y1={y1 + 14} x2={x1 + bottom} y2={y1 + 14} label={`${dims.largeurPoignet.toFixed(1)} cm`} markerId={markerId} />
+          <DimLine x1={x1} y1={y1 + 26} x2={x1 + bottom} y2={y1 + 26} label={`${dims.largeurPoignet.toFixed(1)} cm`} markerId={markerId} />
           <DimLine x1={pad - 14} y1={y0} x2={pad - 14} y2={y1} label={`${dims.longueur.toFixed(1)} cm`} markerId={markerId} vertical />
         </>
       )}
@@ -433,6 +461,11 @@ function EncolureSVG({ dims }) {
   const x0 = pad, y0 = pad;
   const cx = x0 + margin + r;
   const cy = y0 + margin + r;
+  const A = { x: cx, y: cy };
+  const A1 = { x: cx - r, y: cy };
+  const A2 = { x: cx + r, y: cy };
+  const B = { x: cx, y: cy + r };
+  const C = { x: cx, y: cy + r + slit };
   return (
     <PatternCard title="Trou d'encolure" cutNote="découpé dans le buste" viewW={viewW} viewH={viewH} invalid={!valid}>
       {(markerId) => (
@@ -440,8 +473,14 @@ function EncolureSVG({ dims }) {
           <rect x={x0} y={y0} width={swatchW} height={swatchH} fill="var(--parchment)" stroke="var(--ink)" strokeWidth="1.5" />
           <circle cx={cx} cy={cy} r={r} fill="#000" />
           <line x1={cx} y1={cy + r} x2={cx} y2={cy + r + slit} stroke="#000" strokeWidth="3" />
+          <SymmetryAxis x={cx} y1={cy - r} y2={C.y} />
           <DimLine x1={cx} y1={cy} x2={cx + r} y2={cy} label={`${dims.rayon.toFixed(1)} cm`} markerId={markerId} />
           <DimLine x1={cx + r + 16} y1={cy + r} x2={cx + r + 16} y2={cy + r + slit} label={`${dims.profondeurFente.toFixed(1)} cm`} markerId={markerId} vertical />
+          <PointMark {...A} label="A" dx={6} dy={15} />
+          <PointMark {...A1} label="A1" dx={-7} dy={4} anchor="end" />
+          <PointMark {...A2} label="A2" dx={7} dy={4} />
+          <PointMark {...B} label="B" dx={6} dy={14} />
+          <PointMark {...C} label="C" dx={6} dy={4} />
         </>
       )}
     </PatternCard>
@@ -465,6 +504,7 @@ function TriangleSVG({ dims }) {
   const apex = { x: x0 + base / 2, y: y0 };
   const bl = { x: x0, y: y0 + h };
   const br = { x: x0 + base, y: y0 + h };
+  const baseMid = { x: apex.x, y: y0 + h };
   const points = `${apex.x},${apex.y} ${bl.x},${bl.y} ${br.x},${br.y}`;
 
   return (
@@ -483,17 +523,28 @@ function TriangleSVG({ dims }) {
       {(markerId) => (
         <>
           <polygon points={points} fill="var(--parchment)" stroke="var(--ink)" strokeWidth="1.5" />
-          {/* construction guides: perpendicular height + half-base, forming the right triangle */}
-          <line x1={apex.x} y1={apex.y} x2={apex.x} y2={bl.y} stroke="var(--slate)" strokeWidth="1" strokeDasharray="3,3" />
+          <SymmetryAxis x={apex.x} y1={apex.y} y2={bl.y} />
           <line x1={apex.x} y1={bl.y} x2={br.x} y2={bl.y} stroke="var(--slate)" strokeWidth="1" strokeDasharray="3,3" />
-          <text x={apex.x + 5} y={(apex.y + bl.y) / 2} fill="var(--slate)" fontFamily="var(--font-mono)" fontSize="9">
+          <text
+            x={apex.x - 6}
+            y={(apex.y + bl.y) / 2}
+            transform={`rotate(-90 ${apex.x - 6} ${(apex.y + bl.y) / 2})`}
+            textAnchor="middle"
+            fill="var(--slate)"
+            fontFamily="var(--font-mono)"
+            fontSize="9"
+          >
             {perpHeight.toFixed(1)} cm
           </text>
           <text x={(apex.x + br.x) / 2 - 8} y={bl.y - 5} fill="var(--slate)" fontFamily="var(--font-mono)" fontSize="9">
             {halfBase.toFixed(1)} cm
           </text>
+          <PointMark {...apex} label="A" dx={-6} dy={4} anchor="end" />
+          <PointMark {...baseMid} label="B" dx={-6} dy={-6} anchor="end" />
+          <PointMark {...bl} label="B1" dx={-7} dy={14} anchor="end" />
+          <PointMark {...br} label="B2" dx={7} dy={14} />
           {/* dimensioned base */}
-          <DimLine x1={bl.x} y1={bl.y + 16} x2={br.x} y2={bl.y + 16} label={`Base ${dims.largeur.toFixed(1)} cm`} markerId={markerId} />
+          <DimLine x1={bl.x} y1={bl.y + 26} x2={br.x} y2={bl.y + 26} label={`Base ${dims.largeur.toFixed(1)} cm`} markerId={markerId} />
           {/* dimensioned hypotenuse: bottom corner to apex */}
           <DimLine x1={apex.x + 12} y1={apex.y} x2={br.x + 12} y2={br.y} label={`${dims.hauteur.toFixed(1)} cm`} markerId={markerId} />
         </>
@@ -525,7 +576,7 @@ function PointLabel({ x, y, children, anchor = "middle" }) {
 function PointMark({ x, y, label, dx = 0, dy = 0, anchor = "start" }) {
   return (
     <g>
-      <circle cx={x} cy={y} r="2.5" fill="var(--wax)" />
+      <circle cx={x} cy={y} r="2.5" fill="var(--wax)" stroke="var(--parchment)" strokeWidth="1" />
       <PointLabel x={x + dx} y={y + dy} anchor={anchor}>{label}</PointLabel>
     </g>
   );
