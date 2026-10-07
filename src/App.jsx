@@ -175,18 +175,18 @@ function buildExplanations(m) {
 
 function computeBraies(m) {
   const n = (k) => Number(m[k]);
-  const largeurHaut = Math.max(n("hanche") / 2, n("cuisse")) + (2 + 2);
+  const largeurHaut = Math.max(n("hanche") / 2, n("cuisse")) + (4 + 4) + (2 + 2);
   return {
     jambe: {
       largeurHaut,
       largeurMiCuisse: largeurHaut,
-      largeurCheville: n("pied") + (2 + 2),
-      hauteurMiCuisse: n("tailleMiCuisse"),
+      largeurCheville: n("pied") + (4 + 4) + (2 + 2),
+      hauteurMiCuisse: n("tailleMiCuisse") + 4,
       longueur: n("tailleCheville") + 4 + 4,
     },
     entrejambe: {
       base: n("largeurFenteIntMiCuisse") + (2 + 2),
-      hauteurTriangle: n("tailleMiCuisse") + 2,
+      hauteurTriangle: n("tailleMiCuisse") - n("tailleHanche"),
       hauteurBande: n("tailleHanche") + 4,
       largeurBande: 5 + (2 + 2),
     },
@@ -196,7 +196,7 @@ function computeBraies(m) {
 function buildBraiesExplanations(m) {
   const num = (k) => Number(m[k]) || 0;
   const has = (...keys) => keys.every((k) => m[k] !== "" && m[k] != null);
-  const largeurHaut = Math.max(num("hanche") / 2, num("cuisse")) + 4;
+  const largeurHaut = Math.max(num("hanche") / 2, num("cuisse")) + 8 + 4;
 
   return [
     {
@@ -207,9 +207,10 @@ function buildBraiesExplanations(m) {
           name: "Largeur au niveau des hanches",
           parts: [
             { expr: "MAX(Tour de hanche/2, Tour de cuisse)", note: "plus grand du demi-tour de hanche ou du tour de cuisse" },
-            { expr: "(2+2)", note: "marge d'aisance" },
+            { expr: "(4+4)", note: "marge d'aisance de chaque côté" },
+            { expr: "(2+2)", note: "marge de couture de chaque côté" },
           ],
-          substituted: `MAX(${fmtVal(m.hanche)}/2, ${fmtVal(m.cuisse)}) + 4`,
+          substituted: `MAX(${fmtVal(m.hanche)}/2, ${fmtVal(m.cuisse)}) + 8 + 4`,
           ready: has("hanche", "cuisse"),
           result: largeurHaut,
         },
@@ -224,18 +225,22 @@ function buildBraiesExplanations(m) {
           name: "Largeur au niveau de la cheville",
           parts: [
             { expr: "Tour de pied", note: null },
-            { expr: "(2+2)", note: "marge d'aisance" },
+            { expr: "(4+4)", note: "marge d'aisance de chaque côté" },
+            { expr: "(2+2)", note: "marge de couture de chaque côté" },
           ],
-          substituted: `${fmtVal(m.pied)} + 4`,
+          substituted: `${fmtVal(m.pied)} + 8 + 4`,
           ready: has("pied"),
-          result: num("pied") + 4,
+          result: num("pied") + 12,
         },
         {
           name: "Distance haut de la jambe → mi-cuisse",
-          parts: [{ expr: "Hauteur taille-mi-cuisse", note: null }],
-          substituted: `${fmtVal(m.tailleMiCuisse)}`,
+          parts: [
+            { expr: "Hauteur taille-mi-cuisse", note: null },
+            { expr: "4", note: "ourlet haut" },
+          ],
+          substituted: `${fmtVal(m.tailleMiCuisse)} + 4`,
           ready: has("tailleMiCuisse"),
-          result: num("tailleMiCuisse"),
+          result: num("tailleMiCuisse") + 4,
         },
         {
           name: "Distance haut de la jambe → cheville",
@@ -267,12 +272,11 @@ function buildBraiesExplanations(m) {
         {
           name: "Hauteur du triangle",
           parts: [
-            { expr: "Hauteur taille-mi-cuisse", note: null },
-            { expr: "2", note: "marge de couture bas" },
+            { expr: "Hauteur taille-mi-cuisse − Hauteur taille-hanche", note: "le sommet du triangle est au niveau de la hanche" },
           ],
-          substituted: `${fmtVal(m.tailleMiCuisse)} + 2`,
-          ready: has("tailleMiCuisse"),
-          result: num("tailleMiCuisse") + 2,
+          substituted: `${fmtVal(m.tailleMiCuisse)} − ${fmtVal(m.tailleHanche)}`,
+          ready: has("tailleMiCuisse", "tailleHanche"),
+          result: num("tailleMiCuisse") - num("tailleHanche"),
         },
         {
           name: "Hauteur du rectangle (au sommet)",
@@ -580,7 +584,18 @@ function EntrejambeSVG({ dims }) {
   const bl = { x: cx - base / 2, y: y0 + hb + ht };
   const br = { x: cx + base / 2, y: y0 + hb + ht };
   return (
-    <PatternCard title="Pièce d'entrejambe" cutNote="couper 2" viewW={viewW} viewH={viewH} invalid={!valid}>
+    <PatternCard
+      title="Pièce d'entrejambe"
+      cutNote="couper 2"
+      viewW={viewW}
+      viewH={viewH}
+      invalid={!valid}
+      invalidMessage={
+        !(dims.hauteurTriangle > 0)
+          ? "La hauteur taille-mi-cuisse doit être supérieure à la hauteur taille-hanche."
+          : undefined
+      }
+    >
       {(markerId) => (
         <>
           <polygon points={`${apex.x},${apex.y} ${bl.x},${bl.y} ${br.x},${br.y}`} fill="var(--parchment)" stroke="var(--ink)" strokeWidth="1.5" />
