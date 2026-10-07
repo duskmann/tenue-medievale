@@ -173,6 +173,132 @@ function buildExplanations(m) {
   ];
 }
 
+function computeBraies(m) {
+  const n = (k) => Number(m[k]);
+  const largeurHaut = Math.max(n("hanche") / 2, n("cuisse")) + (2 + 2);
+  return {
+    jambe: {
+      largeurHaut,
+      largeurMiCuisse: largeurHaut,
+      largeurCheville: n("pied") + (2 + 2),
+      hauteurMiCuisse: n("tailleMiCuisse"),
+      longueur: n("tailleCheville") + 4 + 4,
+    },
+    entrejambe: {
+      base: n("largeurFenteIntMiCuisse") + (2 + 2),
+      hauteurTriangle: n("tailleMiCuisse") + 2,
+      hauteurBande: n("tailleHanche") + 4,
+      largeurBande: 5 + (2 + 2),
+    },
+  };
+}
+
+function buildBraiesExplanations(m) {
+  const num = (k) => Number(m[k]) || 0;
+  const has = (...keys) => keys.every((k) => m[k] !== "" && m[k] != null);
+  const largeurHaut = Math.max(num("hanche") / 2, num("cuisse")) + 4;
+
+  return [
+    {
+      title: "Jambes",
+      cutNote: "couper 2",
+      formulas: [
+        {
+          name: "Largeur au niveau des hanches",
+          parts: [
+            { expr: "MAX(Tour de hanche/2, Tour de cuisse)", note: "plus grand du demi-tour de hanche ou du tour de cuisse" },
+            { expr: "(2+2)", note: "marge d'aisance" },
+          ],
+          substituted: `MAX(${fmtVal(m.hanche)}/2, ${fmtVal(m.cuisse)}) + 4`,
+          ready: has("hanche", "cuisse"),
+          result: largeurHaut,
+        },
+        {
+          name: "Largeur au niveau mi-cuisse",
+          parts: [{ expr: "Largeur au niveau des hanches", note: null }],
+          substituted: `${has("hanche", "cuisse") ? largeurHaut.toFixed(1) : "…"}`,
+          ready: has("hanche", "cuisse"),
+          result: largeurHaut,
+        },
+        {
+          name: "Largeur au niveau de la cheville",
+          parts: [
+            { expr: "Tour de pied", note: null },
+            { expr: "(2+2)", note: "marge d'aisance" },
+          ],
+          substituted: `${fmtVal(m.pied)} + 4`,
+          ready: has("pied"),
+          result: num("pied") + 4,
+        },
+        {
+          name: "Distance haut de la jambe → mi-cuisse",
+          parts: [{ expr: "Hauteur taille-mi-cuisse", note: null }],
+          substituted: `${fmtVal(m.tailleMiCuisse)}`,
+          ready: has("tailleMiCuisse"),
+          result: num("tailleMiCuisse"),
+        },
+        {
+          name: "Distance haut de la jambe → cheville",
+          parts: [
+            { expr: "Hauteur taille-cheville", note: null },
+            { expr: "4", note: "ourlet haut" },
+            { expr: "4", note: "ourlet bas" },
+          ],
+          substituted: `${fmtVal(m.tailleCheville)} + 4 + 4`,
+          ready: has("tailleCheville"),
+          result: num("tailleCheville") + 8,
+        },
+      ],
+    },
+    {
+      title: "Pièces d'entrejambe",
+      cutNote: "couper 2",
+      formulas: [
+        {
+          name: "Base du triangle",
+          parts: [
+            { expr: "Largeur fente intérieur mi-cuisse", note: null },
+            { expr: "(2+2)", note: "marge de couture de chaque côté" },
+          ],
+          substituted: `${fmtVal(m.largeurFenteIntMiCuisse)} + 4`,
+          ready: has("largeurFenteIntMiCuisse"),
+          result: num("largeurFenteIntMiCuisse") + 4,
+        },
+        {
+          name: "Hauteur du triangle",
+          parts: [
+            { expr: "Hauteur taille-mi-cuisse", note: null },
+            { expr: "2", note: "marge de couture bas" },
+          ],
+          substituted: `${fmtVal(m.tailleMiCuisse)} + 2`,
+          ready: has("tailleMiCuisse"),
+          result: num("tailleMiCuisse") + 2,
+        },
+        {
+          name: "Hauteur du rectangle (au sommet)",
+          parts: [
+            { expr: "Hauteur taille-hanche", note: null },
+            { expr: "4", note: "ourlet haut" },
+          ],
+          substituted: `${fmtVal(m.tailleHanche)} + 4`,
+          ready: has("tailleHanche"),
+          result: num("tailleHanche") + 4,
+        },
+        {
+          name: "Largeur du rectangle",
+          parts: [
+            { expr: "5", note: null },
+            { expr: "(2+2)", note: "marge de couture" },
+          ],
+          substituted: "5 + 4",
+          ready: true,
+          result: 9,
+        },
+      ],
+    },
+  ];
+}
+
 // ---------- Reusable drafting-board SVG pieces ----------
 
 function ArrowMarker({ id }) {
@@ -372,6 +498,104 @@ function TriangleSVG({ dims }) {
   );
 }
 
+function PointLabel({ x, y, children, anchor = "middle" }) {
+  return (
+    <text x={x} y={y} fill="var(--wax)" fontFamily="var(--font-mono)" fontSize="11" fontWeight="600" textAnchor={anchor}>
+      {children}
+    </text>
+  );
+}
+
+function JambeSVG({ dims }) {
+  const valid = isValidDims(dims) && dims.hauteurMiCuisse < dims.longueur;
+  const pad = 44;
+  const maxW = Math.max(dims.largeurHaut, dims.largeurCheville) || 1;
+  const scale = valid ? Math.min(240 / maxW, 340 / dims.longueur) : 1;
+  const top = (dims.largeurHaut || 0) * scale;
+  const ankle = (dims.largeurCheville || 0) * scale;
+  const hB = (dims.hauteurMiCuisse || 0) * scale;
+  const len = (dims.longueur || 0) * scale;
+  const w = Math.max(top, ankle);
+  const viewW = w + pad * 2 + 30;
+  const viewH = len + pad * 2;
+  const x0 = pad + (w - top) / 2;
+  const xc = pad + (w - ankle) / 2;
+  const y0 = pad;
+  const A = { x: x0, y: y0 };
+  const A1 = { x: x0 + top, y: y0 };
+  const B = { x: x0, y: y0 + hB };
+  const B1 = { x: x0 + top, y: y0 + hB };
+  const C = { x: xc, y: y0 + len };
+  const C1 = { x: xc + ankle, y: y0 + len };
+  const points = [A, A1, B1, C1, C, B].map((p) => `${p.x},${p.y}`).join(" ");
+  return (
+    <PatternCard
+      title="Jambe"
+      cutNote="couper 2"
+      viewW={viewW}
+      viewH={viewH}
+      invalid={!valid}
+      invalidMessage={
+        isValidDims(dims) && !valid
+          ? "La hauteur taille-mi-cuisse doit être inférieure à la longueur totale de la jambe."
+          : undefined
+      }
+    >
+      {(markerId) => (
+        <>
+          <polygon points={points} fill="var(--parchment)" stroke="var(--ink)" strokeWidth="1.5" />
+          <line x1={B.x} y1={B.y} x2={B1.x} y2={B1.y} stroke="var(--slate)" strokeWidth="1" strokeDasharray="3,3" />
+          <PointLabel x={A.x + 10} y={A.y + 14}>A</PointLabel>
+          <PointLabel x={A1.x - 12} y={A1.y + 14}>A1</PointLabel>
+          <PointLabel x={B.x + 10} y={B.y - 5}>B</PointLabel>
+          <PointLabel x={B1.x - 12} y={B1.y - 5}>B1</PointLabel>
+          <PointLabel x={C.x + 10} y={C.y - 5}>C</PointLabel>
+          <PointLabel x={C1.x - 12} y={C1.y - 5}>C1</PointLabel>
+          <DimLine x1={A.x} y1={A.y - 14} x2={A1.x} y2={A1.y - 14} label={`${dims.largeurHaut.toFixed(1)} cm`} markerId={markerId} />
+          <DimLine x1={C.x} y1={C.y + 26} x2={C1.x} y2={C1.y + 26} label={`${dims.largeurCheville.toFixed(1)} cm`} markerId={markerId} />
+          <DimLine x1={pad - 16} y1={A.y} x2={pad - 16} y2={B.y} label={`${dims.hauteurMiCuisse.toFixed(1)} cm`} markerId={markerId} vertical />
+          <DimLine x1={pad + w + 22} y1={A.y} x2={pad + w + 22} y2={C.y} label={`${dims.longueur.toFixed(1)} cm`} markerId={markerId} vertical />
+        </>
+      )}
+    </PatternCard>
+  );
+}
+
+function EntrejambeSVG({ dims }) {
+  const valid = isValidDims(dims);
+  const pad = 44;
+  const totalH = (dims.hauteurBande || 0) + (dims.hauteurTriangle || 0);
+  const maxW = Math.max(dims.base, dims.largeurBande) || 1;
+  const scale = valid ? Math.min(240 / maxW, 340 / totalH) : 1;
+  const base = (dims.base || 0) * scale;
+  const band = (dims.largeurBande || 0) * scale;
+  const hb = (dims.hauteurBande || 0) * scale;
+  const ht = (dims.hauteurTriangle || 0) * scale;
+  const w = Math.max(base, band);
+  const viewW = w + pad * 2 + 30;
+  const viewH = hb + ht + pad * 2;
+  const cx = pad + w / 2;
+  const y0 = pad;
+  const apex = { x: cx, y: y0 + hb };
+  const bl = { x: cx - base / 2, y: y0 + hb + ht };
+  const br = { x: cx + base / 2, y: y0 + hb + ht };
+  return (
+    <PatternCard title="Pièce d'entrejambe" cutNote="couper 2" viewW={viewW} viewH={viewH} invalid={!valid}>
+      {(markerId) => (
+        <>
+          <polygon points={`${apex.x},${apex.y} ${bl.x},${bl.y} ${br.x},${br.y}`} fill="var(--parchment)" stroke="var(--ink)" strokeWidth="1.5" />
+          <rect x={cx - band / 2} y={y0} width={band} height={hb} fill="var(--parchment)" stroke="var(--ink)" strokeWidth="1.5" />
+          <line x1={apex.x} y1={apex.y} x2={apex.x} y2={bl.y} stroke="var(--slate)" strokeWidth="1" strokeDasharray="3,3" />
+          <DimLine x1={cx - band / 2} y1={y0 - 14} x2={cx + band / 2} y2={y0 - 14} label={`${dims.largeurBande.toFixed(1)} cm`} markerId={markerId} />
+          <DimLine x1={bl.x} y1={bl.y + 26} x2={br.x} y2={br.y + 26} label={`Base ${dims.base.toFixed(1)} cm`} markerId={markerId} />
+          <DimLine x1={cx - band / 2 - 14} y1={y0} x2={cx - band / 2 - 14} y2={apex.y} label={`${dims.hauteurBande.toFixed(1)} cm`} markerId={markerId} vertical />
+          <DimLine x1={pad + w + 22} y1={apex.y} x2={pad + w + 22} y2={bl.y} label={`${dims.hauteurTriangle.toFixed(1)} cm`} markerId={markerId} vertical />
+        </>
+      )}
+    </PatternCard>
+  );
+}
+
 function FormulaSection({ sections }) {
   return (
     <div className="formulas">
@@ -513,6 +737,48 @@ function buildFieldGroups(requiredKeys) {
   })).filter((g) => g.fields.length > 0);
 }
 
+function TuniquePieces({ pattern }) {
+  return (
+    <>
+      <div className="pattern-row">
+        <BusteSVG dims={pattern.buste} />
+        <MancheSVG dims={pattern.manche} />
+        <TriangleSVG dims={pattern.triangle} />
+      </div>
+
+      <TriangleConstructionNote dims={pattern.triangle} />
+
+      <div className="subsection">
+        <h2 className="steps-title">Découpe de l'encolure</h2>
+        <p className="steps-caption">
+          Le trou ci-dessous (en noir) est à découper directement
+          dans le buste : il correspond au tour de cou. Le col
+          lui-même est une pièce distincte, à découper dans un tissu
+          contrastant, qui vient border ce trou.
+        </p>
+        <div className="pattern-row">
+          <EncolureSVG dims={pattern.col} />
+        </div>
+        <div className="placeholder">WIP — à compléter</div>
+      </div>
+    </>
+  );
+}
+
+function BraiesPieces({ pattern }) {
+  return (
+    <div className="pattern-row">
+      <JambeSVG dims={pattern.jambe} />
+      <EntrejambeSVG dims={pattern.entrejambe} />
+    </div>
+  );
+}
+
+const CALCULATORS = {
+  tunique: { compute: computePattern, explain: buildExplanations, Pieces: TuniquePieces },
+  braies: { compute: computeBraies, explain: buildBraiesExplanations, Pieces: BraiesPieces },
+};
+
 export default function TunicCalculator() {
   const [selectedPiece, setSelectedPiece] = useState("tunique");
   const piece = PIECES.find((p) => p.key === selectedPiece);
@@ -523,16 +789,18 @@ export default function TunicCalculator() {
 
   const missingRequired = piece.requiredKeys.filter((k) => !(Number(measurements[k]) > 0));
   const allRequiredFilled = missingRequired.length === 0;
-  const hasFormulas = selectedPiece === "tunique"; // only the tunique's math is defined so far
+  const calculator = CALCULATORS[selectedPiece];
+  const hasFormulas = Boolean(calculator);
   const pattern = useMemo(
-    () => (hasFormulas && allRequiredFilled ? computePattern(measurements) : null),
-    [measurements, allRequiredFilled, hasFormulas]
+    () => (calculator && allRequiredFilled ? calculator.compute(measurements) : null),
+    [measurements, allRequiredFilled, calculator]
   );
 
   const explanations = useMemo(
-    () => (hasFormulas ? buildExplanations(measurements) : null),
-    [measurements, hasFormulas]
+    () => (calculator ? calculator.explain(measurements) : null),
+    [measurements, calculator]
   );
+  const Pieces = calculator?.Pieces;
 
   const setField = (key, value) => setMeasurements((m) => ({ ...m, [key]: value }));
 
@@ -852,31 +1120,7 @@ export default function TunicCalculator() {
               Renseignez toutes les mesures ci-dessus pour tracer les pièces du patron.
             </div>
           )}
-          {pattern && (
-            <>
-              <div className="pattern-row">
-                <BusteSVG dims={pattern.buste} />
-                <MancheSVG dims={pattern.manche} />
-                <TriangleSVG dims={pattern.triangle} />
-              </div>
-
-              <TriangleConstructionNote dims={pattern.triangle} />
-
-              <div className="subsection">
-                <h2 className="steps-title">Découpe de l'encolure</h2>
-                <p className="steps-caption">
-                  Le trou ci-dessous (en noir) est à découper directement
-                  dans le buste : il correspond au tour de cou. Le col
-                  lui-même est une pièce distincte, à découper dans un tissu
-                  contrastant, qui vient border ce trou.
-                </p>
-                <div className="pattern-row">
-                  <EncolureSVG dims={pattern.col} />
-                </div>
-                <div className="placeholder">WIP — à compléter</div>
-              </div>
-            </>
-          )}
+          {pattern && <Pieces pattern={pattern} />}
         </section>
 
         <section className="step-section">
