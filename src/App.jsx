@@ -552,15 +552,15 @@ function JambeSVG({ dims }) {
   const cx = pad + w / 2;
   const y0 = pad;
   const A = { x: cx, y: y0 };
-  const A1 = { x: cx + top / 2, y: y0 };
-  const A2 = { x: cx - top / 2, y: y0 };
+  const A1 = { x: cx - top / 2, y: y0 };
+  const A2 = { x: cx + top / 2, y: y0 };
   const B = { x: cx, y: y0 + hB };
-  const B1 = { x: cx + top / 2, y: y0 + hB };
-  const B2 = { x: cx - top / 2, y: y0 + hB };
+  const B1 = { x: cx - top / 2, y: y0 + hB };
+  const B2 = { x: cx + top / 2, y: y0 + hB };
   const C = { x: cx, y: y0 + len };
-  const C1 = { x: cx + ankle / 2, y: y0 + len };
-  const C2 = { x: cx - ankle / 2, y: y0 + len };
-  const points = [A2, A1, B1, C1, C2, B2].map((p) => `${p.x},${p.y}`).join(" ");
+  const C1 = { x: cx - ankle / 2, y: y0 + len };
+  const C2 = { x: cx + ankle / 2, y: y0 + len };
+  const points = [A1, A2, B2, C2, C1, B1].map((p) => `${p.x},${p.y}`).join(" ");
   return (
     <PatternCard
       title="Jambe"
@@ -578,18 +578,18 @@ function JambeSVG({ dims }) {
         <>
           <polygon points={points} fill="var(--parchment)" stroke="var(--ink)" strokeWidth="1.5" />
           <SymmetryAxis x={cx} y1={A.y} y2={C.y} />
-          <line x1={B2.x} y1={B2.y} x2={B1.x} y2={B1.y} stroke="var(--slate)" strokeWidth="1" strokeDasharray="3,3" />
+          <line x1={B1.x} y1={B1.y} x2={B2.x} y2={B2.y} stroke="var(--slate)" strokeWidth="1" strokeDasharray="3,3" />
           <PointMark {...A} label="A" dx={6} dy={15} />
-          <PointMark {...A1} label="A1" dx={-7} dy={15} anchor="end" />
-          <PointMark {...A2} label="A2" dx={7} dy={15} />
+          <PointMark {...A1} label="A1" dx={7} dy={15} />
+          <PointMark {...A2} label="A2" dx={-7} dy={15} anchor="end" />
           <PointMark {...B} label="B" dx={6} dy={-6} />
-          <PointMark {...B1} label="B1" dx={-7} dy={-6} anchor="end" />
-          <PointMark {...B2} label="B2" dx={7} dy={-6} />
+          <PointMark {...B1} label="B1" dx={7} dy={-6} />
+          <PointMark {...B2} label="B2" dx={-7} dy={-6} anchor="end" />
           <PointMark {...C} label="C" dx={6} dy={-6} />
-          <PointMark {...C1} label="C1" dx={-7} dy={-6} anchor="end" />
-          <PointMark {...C2} label="C2" dx={7} dy={-6} />
-          <DimLine x1={A2.x} y1={A.y - 14} x2={A1.x} y2={A1.y - 14} label={`${dims.largeurHaut.toFixed(1)} cm`} markerId={markerId} />
-          <DimLine x1={C2.x} y1={C.y + 26} x2={C1.x} y2={C1.y + 26} label={`${dims.largeurCheville.toFixed(1)} cm`} markerId={markerId} />
+          <PointMark {...C1} label="C1" dx={7} dy={-6} />
+          <PointMark {...C2} label="C2" dx={-7} dy={-6} anchor="end" />
+          <DimLine x1={A1.x} y1={A.y - 14} x2={A2.x} y2={A2.y - 14} label={`${dims.largeurHaut.toFixed(1)} cm`} markerId={markerId} />
+          <DimLine x1={C1.x} y1={C.y + 26} x2={C2.x} y2={C2.y + 26} label={`${dims.largeurCheville.toFixed(1)} cm`} markerId={markerId} />
           <DimLine x1={pad - 16} y1={A.y} x2={pad - 16} y2={B.y} label={`${dims.hauteurMiCuisse.toFixed(1)} cm`} markerId={markerId} vertical />
           <DimLine x1={pad + w + 22} y1={A.y} x2={pad + w + 22} y2={C.y} label={`${dims.longueur.toFixed(1)} cm`} markerId={markerId} vertical />
         </>
@@ -614,15 +614,15 @@ function EntrejambeSVG({ dims }) {
   const cx = pad + w / 2;
   const y0 = pad;
   const A = { x: cx, y: y0 };
-  const A1 = { x: cx + band / 2, y: y0 };
-  const A2 = { x: cx - band / 2, y: y0 };
+  const A1 = { x: cx - band / 2, y: y0 };
+  const A2 = { x: cx + band / 2, y: y0 };
   const B = { x: cx, y: y0 + hb };
-  const B1 = { x: cx + band / 2, y: y0 + hb };
-  const B2 = { x: cx - band / 2, y: y0 + hb };
+  const B1 = { x: cx - band / 2, y: y0 + hb };
+  const B2 = { x: cx + band / 2, y: y0 + hb };
   const C = { x: cx, y: y0 + hb + ht };
-  const C1 = { x: cx + base / 2, y: y0 + hb + ht };
-  const C2 = { x: cx - base / 2, y: y0 + hb + ht };
-  const outline = [A2, A1, B1, C1, C2, B2].map((p) => `${p.x},${p.y}`).join(" ");
+  const C1 = { x: cx - base / 2, y: y0 + hb + ht };
+  const C2 = { x: cx + base / 2, y: y0 + hb + ht };
+  const outline = [A1, A2, B2, C2, C1, B1].map((p) => `${p.x},${p.y}`).join(" ");
   return (
     <PatternCard
       title="Pièce d'entrejambe"
@@ -640,19 +640,19 @@ function EntrejambeSVG({ dims }) {
         <>
           <polygon points={outline} fill="var(--parchment)" stroke="var(--ink)" strokeWidth="1.5" />
           <SymmetryAxis x={cx} y1={A.y} y2={C.y} />
-          <line x1={B2.x} y1={B2.y} x2={B1.x} y2={B1.y} stroke="var(--slate)" strokeWidth="1" strokeDasharray="3,3" />
+          <line x1={B1.x} y1={B1.y} x2={B2.x} y2={B2.y} stroke="var(--slate)" strokeWidth="1" strokeDasharray="3,3" />
           <PointMark {...A} label="A" dx={5} dy={15} />
-          <PointMark {...A1} label="A1" dx={7} dy={15} />
-          <PointMark {...A2} label="A2" dx={-7} dy={15} anchor="end" />
+          <PointMark {...A1} label="A1" dx={-7} dy={15} anchor="end" />
+          <PointMark {...A2} label="A2" dx={7} dy={15} />
           <PointMark {...B} label="B" dx={5} dy={-6} />
-          <PointMark {...B1} label="B1" dx={7} dy={4} />
-          <PointMark {...B2} label="B2" dx={-7} dy={4} anchor="end" />
+          <PointMark {...B1} label="B1" dx={-7} dy={4} anchor="end" />
+          <PointMark {...B2} label="B2" dx={7} dy={4} />
           <PointMark {...C} label="C" dx={5} dy={-6} />
-          <PointMark {...C1} label="C1" dx={-9} dy={-6} anchor="end" />
-          <PointMark {...C2} label="C2" dx={9} dy={-6} />
-          <DimLine x1={A2.x} y1={y0 - 14} x2={A1.x} y2={y0 - 14} label={`${dims.largeurBande.toFixed(1)} cm`} markerId={markerId} />
-          <DimLine x1={C2.x} y1={C.y + 26} x2={C1.x} y2={C1.y + 26} label={`Base ${dims.base.toFixed(1)} cm`} markerId={markerId} />
-          <DimLine x1={A2.x - 30} y1={y0} x2={A2.x - 30} y2={B.y} label={`${dims.hauteurBande.toFixed(1)} cm`} markerId={markerId} vertical />
+          <PointMark {...C1} label="C1" dx={9} dy={-6} />
+          <PointMark {...C2} label="C2" dx={-9} dy={-6} anchor="end" />
+          <DimLine x1={A1.x} y1={y0 - 14} x2={A2.x} y2={y0 - 14} label={`${dims.largeurBande.toFixed(1)} cm`} markerId={markerId} />
+          <DimLine x1={C1.x} y1={C.y + 26} x2={C2.x} y2={C2.y + 26} label={`Base ${dims.base.toFixed(1)} cm`} markerId={markerId} />
+          <DimLine x1={A1.x - 30} y1={y0} x2={A1.x - 30} y2={B.y} label={`${dims.hauteurBande.toFixed(1)} cm`} markerId={markerId} vertical />
           <DimLine x1={pad + w + 22} y1={B.y} x2={pad + w + 22} y2={C.y} label={`${dims.hauteurTriangle.toFixed(1)} cm`} markerId={markerId} vertical />
         </>
       )}
