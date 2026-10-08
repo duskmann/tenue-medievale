@@ -1087,7 +1087,8 @@ export default function TunicCalculator() {
         .site-footer {
           max-width: 1100px; margin: 56px auto 0; padding-top: 14px;
           border-top: 1px solid #d8cdb4; text-align: center;
-          font-size: 12px; color: var(--slate);
+          font-size: clamp(9px, calc((100vw - 40px) / 36), 12px); line-height: 1.6;
+          color: var(--slate);
         }
         .site-footer a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
         .site-footer a:hover { color: var(--ink); }
@@ -1257,7 +1258,8 @@ export default function TunicCalculator() {
       </div>
 
       <footer className="site-footer">
-        Site créé par Shyam S | <a href="mailto:shyam@sridar.net">shyam@sridar.net</a> | Patrons élaborés pour et par la Compagnie Excalibur | <a href="https://compagnie-excalibur.fr" target="_blank" rel="noopener noreferrer">compagnie-excalibur.fr</a>
+        <div>Site créé par Shyam S | <a href="mailto:shyam@sridar.net">shyam@sridar.net</a></div>
+        <div>Patrons élaborés pour et par la Compagnie Excalibur | <a href="https://compagnie-excalibur.fr" target="_blank" rel="noopener noreferrer">compagnie-excalibur.fr</a></div>
       </footer>
     </div>
   );
