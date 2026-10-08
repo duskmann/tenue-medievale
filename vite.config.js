@@ -7,5 +7,5 @@ import react from "@vitejs/plugin-react";
 // domain or to <user>.github.io itself (not a project page), set base to '/'.
 export default defineConfig({
   plugins: [react()],
-  base: "/webapp-costume-xk/",
+  base: "/tenue-medievale/",
 });
