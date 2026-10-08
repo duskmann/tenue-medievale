@@ -1257,7 +1257,7 @@ export default function TunicCalculator() {
       </div>
 
       <footer className="site-footer">
-        Shyam S &bull; <a href="mailto:shyam@sridar.net">shyam@sridar.net</a> &bull; Patrons élaborés pour et par la Compagnie Excalibur
+        Site créé par Shyam S | <a href="mailto:shyam@sridar.net">shyam@sridar.net</a> | Patrons élaborés pour et par la Compagnie Excalibur | <a href="https://compagnie-excalibur.fr" target="_blank" rel="noopener noreferrer">compagnie-excalibur.fr</a>
       </footer>
     </div>
   );
