@@ -4,6 +4,8 @@ import React, { useState, useMemo } from "react";
 // Formulas as provided: aisance/couture allowances are embedded directly
 // in the constants below (e.g. (2+2), (2+4), etc).
 
+const CARRE_AISSELLE_COTE = 12;
+
 function computePattern(m) {
   const poitrine = Number(m.poitrine);
   const hanche = Number(m.hanche);
@@ -30,7 +32,9 @@ function computePattern(m) {
     hauteur: Number(m.tailleGenou),
   };
 
-  return { buste, manche, col, triangle };
+  const carre = { largeur: CARRE_AISSELLE_COTE, longueur: CARRE_AISSELLE_COTE };
+
+  return { buste, manche, col, triangle, carre };
 }
 
 function isValidDims(dims) {
@@ -169,6 +173,17 @@ function buildExplanations(m) {
           result: num("tailleGenou"),
         },
       ],
+    },
+    {
+      title: "Carré d'aisance aisselles",
+      cutNote: "couper 2",
+      formulas: ["Largeur", "Hauteur"].map((name) => ({
+        name,
+        parts: [{ expr: String(CARRE_AISSELLE_COTE), note: "dimension fixe" }],
+        substituted: String(CARRE_AISSELLE_COTE),
+        ready: true,
+        result: CARRE_AISSELLE_COTE,
+      })),
     },
   ];
 }
@@ -369,7 +384,7 @@ function PatternCard({ title, cutNote, children, viewW, viewH, invalid, invalidM
   );
 }
 
-function BusteSVG({ dims }) {
+function RectangleSVG({ dims, title, cutNote }) {
   const valid = isValidDims(dims);
   const pad = 40;
   const scale = valid ? Math.min(240 / dims.largeur, 320 / dims.longueur) : 1;
@@ -386,7 +401,7 @@ function BusteSVG({ dims }) {
   const B1 = { x: x0, y: y0 + h };
   const B2 = { x: x0 + w, y: y0 + h };
   return (
-    <PatternCard title="Buste avant et arrière" cutNote="couper 2" viewW={viewW} viewH={viewH} invalid={!valid}>
+    <PatternCard title={title} cutNote={cutNote} viewW={viewW} viewH={viewH} invalid={!valid}>
       {(markerId) => (
         <>
           <rect x={x0} y={y0} width={w} height={h} fill="var(--parchment)" stroke="var(--ink)" strokeWidth="1.5" />
@@ -856,9 +871,10 @@ function TuniquePieces({ pattern }) {
   return (
     <>
       <div className="pattern-row">
-        <BusteSVG dims={pattern.buste} />
+        <RectangleSVG dims={pattern.buste} title="Buste avant et arrière" cutNote="couper 2" />
         <MancheSVG dims={pattern.manche} />
         <TriangleSVG dims={pattern.triangle} />
+        <RectangleSVG dims={pattern.carre} title="Carré d'aisance aisselles" cutNote="couper 2" />
       </div>
 
       <TriangleConstructionNote dims={pattern.triangle} />
